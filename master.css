@@ -1,0 +1,73 @@
+/* Responsive Design Setup */
+* {
+    box-sizing: border-box;
+}
+
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+
+[class*="col-"] {
+    float: left;
+    padding: 12px;
+}
+
+h1{
+    text-align: center;
+}
+
+.scoreboard{
+    border: 2px solid black;
+    height: 1.2em;
+    padding: 0;
+    text-align: center;
+    font-size: 5em;
+}
+
+.playerOne{
+    background-color: red;
+    width: 25%;
+    height: 100%;
+    float: left;
+}
+
+.filler{
+    width: 50%;
+    height: 100%;
+    float: left;
+}
+
+.playerTwo{
+    width: 25%;
+    background-color: blue;
+    height: 100%;
+    float: left;
+}
+
+#playField{
+    border: 1px solid black;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%); 
+    padding: 0;
+    background-image: url(bg.jpg);
+}
+
+@media screen and (max-width: 500px){
+    .col-2{
+        width: 0%;
+    }
+
+    .col-8{
+        width: 100%;
+    }
+}
