@@ -7,7 +7,7 @@ var Globals = {
     Player2: {},
     Canvas: {},
     Context: {},
-    Gravity: 1.05,
+    Gravity: 1.1,
     Paused: false,
     Respawn: function(){
         Globals.Player1.X = 0;
@@ -54,32 +54,31 @@ var Globals = {
     },
     Textures: {
         p1: () => {
-            var img = new Image(124,124);
+            var img = new Image(256,265);
             img.src = "img/p1.png";
             return img;
         },
         p2: () => {
-            var img = new Image(124,124);
+            var img = new Image(265,265);
             img.src = "img/p2.png";
             return img;
         },
         platLeft: () => {
-            var img = new Image(124,124);
+            var img = new Image(265,265);
             img.src = "img/platLeft.png";
             return img;
         },
         platMid: () => {
-            var img = new Image(124,124);
+            var img = new Image(265,265);
             img.src = "img/platMid.png";
             return img;
         },
         platRight: () => {
-            var img = new Image(124,124);
+            var img = new Image(256,256);
             img.src = "img/platRight.png";
             return img;
         }
-    }
-
+    },
 };
 
 var Platforms = [];
@@ -90,13 +89,13 @@ function InitializeGame(){
     Globals.Canvas = document.getElementById("playField");
     Globals.Context = Globals.Canvas.getContext('2d');
     Globals.Player2.X = Globals.Canvas.width - Globals.Player2.Size;
-    Platforms.push(new Platform(Globals.Player1.X, 50, 35, 10));
-    Platforms.push(new Platform((Globals.Canvas.width- 35), 50, 35, 10));    
+    Platforms.push(new Platform(Globals.Player1.X, 150, 35, 10));
+    Platforms.push(new Platform((Globals.Canvas.width- 35), 150, 35, 10));    
     Platforms.push(new Platform(getRandom(-50, Globals.Canvas.width - 60), Globals.Canvas.height + 10, getRandom(35, 55), 10));    
     
     setInterval(function(){
-        for(var i = 0; i < getRandom(1, 3); i++){
-            Platforms.push(new Platform(getRandom(-50, Globals.Canvas.width - 60), Globals.Canvas.height + 10, getRandom(35, 55), 10));
+        for(var i = 0; i < getRandom(2, 4); i++){
+            Platforms.push(new Platform(getRandom(-50, Globals.Canvas.width - 60), Globals.Canvas.height + 10, (Math.round(getRandom(30, 80) / 10) * 10), 10));
         }
     }, 750);
 
@@ -115,6 +114,8 @@ function InitializeGame(){
             D: 68
             S: 83
             Space: 32
+
+            P: 80
             
         */
 
@@ -148,6 +149,10 @@ function InitializeGame(){
                 break;
             case 17:
                 p2ctrl.attackPressed = true;
+                break;
+
+            case 80:
+                alert("Game Paused\nPress OK to Resume");
                 break;
         }
         
@@ -203,12 +208,13 @@ function Player(id){
     */
     this.X = 0;
     this.Y = 0;
-    this.Size = 10;
+    this.Size = 20;
     this.ID = id;
     this.Score = 0;
     this.Velocity = {x: 0, y: 0};
     this.TerminalVelocity = 12;
     this.hasJumped = false;
+    this.Colliding = false;
     this.SideColliding = {right: false, left: false};
 
     this.Controller = {
@@ -252,7 +258,7 @@ function Player(id){
     }
 
     this.Draw = function(){
-        Globals.Context.drawImage(Globals.Textures["p"+this.ID](), 0, 0, 20, 20);
+        Globals.Context.drawImage(Globals.Textures["p"+this.ID](), this.X, this.Y, this.Size, this.Size);
         
     }
 
@@ -273,14 +279,6 @@ function Player(id){
 
         //Check if the player is colliding
         for(var i = 0; i < Platforms.length; i++){
-
-            //Y-Collision
-            if(this.collidesWithY(Platforms[i])){
-                this.Y = Platforms[i].Y + 1 - this.Size;
-                this.Velocity.y = 0;
-                this.hasJumped = false;
-                break;
-            }
             
             //X-Collision
             var currentCollisionWithX = this.collidesWithX(Platforms[i]);
@@ -292,21 +290,34 @@ function Player(id){
             else if(!currentCollisionWithX.left && !currentCollisionWithX.right && i == Platforms.length - 1){
                 this.SideColliding = currentCollisionWithX;
             }
+            
+            //Y-Collision
+            if(this.collidesWithY(Platforms[i])){
+                this.Y = Platforms[i].Y + 1 - this.Size;
+                this.Velocity.y = 0;
+                this.hasJumped = false;
+                this.Colliding = true;
+                break;
+            }
         };
 
         //Check if the player is jumping
         if(this.Controller.jumpPressed && this.hasJumped == false){
 
-            this.Transform(0, -4);
+            //Clear the player from the platform collision
+            if(this.Colliding)
+                this.Transform(0, -5);
+            else
+                this.Transform(0, -2);
             //Make sure the velocity is multipliable before adjusting
-            if(this.Velocity.y == 0){
-                //Clear the player from the platform collision
-                this.Velocity.y = -1;
+            if(this.Velocity.y >= 0){
+                this.Velocity.y = -1.2;
             }
-            this.Velocity.y *= 1.005;
+            this.Velocity.y *= 1.01;
         }
 
-        if(this.Velocity.y < -1.5){
+        if(this.Velocity.y < -3.5){
+            this.hasJumped = true;
             this.Velocity.y = 1;
         }
 
@@ -341,8 +352,8 @@ function Player(id){
         if( 
             ((this.Y + this.Size) >= (platform.Y - securityFactor)) && 
             ((this.Y) < (platform.Y + platform.Height)) &&
-            ((this.X + this.Size) >= platform.X) &&
-            ((this.X) <= (platform.X + platform.Width))
+            ((this.X + this.Size) >= platform.X + 2) &&
+            ((this.X) <= (platform.X + platform.Width - 2))
         )
             return true;
         else
@@ -354,10 +365,9 @@ function Player(id){
         if( 
             ((this.X + this.Size) >= (platform.X - securityFactor)) && 
             ((this.X + this.Size) <= (platform.X)) &&             
-            ((this.Y) <= (platform.Y + platform.Height + this.Size)) &&
-            ((this.Y + this.Size) >= (platform.Y - this.Size))
+            ((this.Y) <= (platform.Y + platform.Height + this.Size / 2)) &&
+            ((this.Y + this.Size) >= (platform.Y - this.Size / 2))
         ){
-            console.log("HelloW");
             return {right: true, left: false};
         }
         else if(
@@ -380,12 +390,15 @@ function Platform(x, y, width, height){
     this.Height = height;
 
     this.Draw = function(){
-        Globals.Context.fillStyle = "white";
-        Globals.Context.fillRect(this.X, this.Y, this.Width, this.Height);
+        Globals.Context.drawImage(Globals.Textures.platLeft(), this.X, this.Y, 10, 10);
+        Globals.Context.drawImage(Globals.Textures.platRight(), this.X + this.Width - 10, this.Y, 10, 10);
+        for(var i = 10; i < this.Width - 10; i+=10){
+            Globals.Context.drawImage(Globals.Textures.platMid(), this.X + i, this.Y, 10, 10);
+        }
     }
 
     this.Update = function(){
-        this.Y -= 1.0;
+        this.Y -= 1.1;
     }
 
 }

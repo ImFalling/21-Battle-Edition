@@ -3,6 +3,20 @@
     box-sizing: border-box;
 }
 
+@font-face {
+    font-family: xxx;
+    src: url(font.ttf);
+}
+
+@keyframes numberRot {
+    0%{
+        transform: rotateY(0deg);
+    }
+    100%{
+        translate: rotateY(359deg)
+    }
+}
+
 .col-1 {width: 8.33%;}
 .col-2 {width: 16.66%;}
 .col-3 {width: 25%;}
@@ -21,12 +35,30 @@
     padding: 12px;
 }
 
+body{
+    background-color: black;
+}
+
 h1{
     text-align: center;
+    font-family: "xxx";
+    font-size: 40px;
+    color: white;
+    filter: drop-shadow(0px 0px 10px white);
+    margin: 10px;
+}
+
+div span{
+    color: white;
+    font-family: "xxx";
+    filter: drop-shadow(0px 0px 10px black);   
+    animation-name: numberRot;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
 }
 
 .scoreboard{
-    border: 2px solid black;
+    filter: drop-shadow(0px 0px 15px rgba(0, 0, 108, 0.43));    
     height: 1.2em;
     padding: 0;
     text-align: center;
@@ -54,7 +86,8 @@ h1{
 }
 
 #playField{
-    border: 1px solid black;
+    border: 1px solid rgba(0, 0, 139, 0.6);
+    filter: drop-shadow(0px 0px 15px rgba(0, 0, 108, 0.43));        
     position: relative;
     left: 50%;
     transform: translateX(-50%); 
@@ -69,5 +102,13 @@ h1{
 
     .col-8{
         width: 100%;
+    }
+
+    .scoreboard{
+        font-size: 4em;
+    }
+
+    h1{
+        font-size: 30px;
     }
 }
