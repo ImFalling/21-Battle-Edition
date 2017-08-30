@@ -1,4 +1,4 @@
-# 21-Battle-Edition
+## 21-Battle-Edition
 An action-version of the old game of 21.
 Made for a school assignment.
 Won't be updated.
