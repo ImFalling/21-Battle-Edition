@@ -12,6 +12,6 @@ Tested in:
   Firefox,
   Chromium
   
-Created between the 21st and 25th of August in 2012
+Created between the 21st and 25th of August in 2017
 
 Author: Jakob Frick
